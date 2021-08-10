@@ -21,6 +21,7 @@ import midi.MidiTune;
 
 public class HangMan extends Application {
 
+	// Git tutorial
 	private String userGuess;
 	
 	private boolean giveUp = false;
