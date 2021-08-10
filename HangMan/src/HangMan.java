@@ -91,7 +91,7 @@ public class HangMan extends Application {
 	 * you just have to call draw() to completely redraw the canvas.
 	 */
 	public void draw() {
-		
+		// Testing git branching
 		clear();
 		
 		g.setFill(Color.BLACK);
