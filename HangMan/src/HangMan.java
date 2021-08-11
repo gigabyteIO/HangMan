@@ -281,6 +281,7 @@ public class HangMan extends Application {
 		// Testing git branching
 		clear();
 		
+		// Figure out how to make text larger
 		Text wordSoFar_ = new Text(wordSoFar);
 		wordSoFar_.setStyle("-fx-font: 40 arial;");
 		
