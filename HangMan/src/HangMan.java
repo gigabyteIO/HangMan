@@ -20,6 +20,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import midi.MidiTune;
@@ -32,8 +33,8 @@ public class HangMan extends Application {
 	private String wordSoFar;   // The word that shows any correct character guesses, otherwise shows "_ " (underscores)
 	private String guesses;		// String concatenated with each character guess
 	
-	private boolean giveUp = false;
-	private boolean newGame = true;
+	private boolean giveUp;  // Variable that tracks whether player has pressed the "give up" button
+	private boolean newGame; // Keeps track of whether it's a new game
 	private boolean userWon;
 	
 	private final int HEAD = 1,
@@ -43,11 +44,8 @@ public class HangMan extends Application {
 					  LEFT_LEG = 5,
 					  RIGHT_LEG = 6;
 	
-	
-	
-	private GraphicsContext g;
+	private GraphicsContext g; // Used for drawing on canvas
 	private Button[] alphabetButtons = new Button[26]; // Holds all the alphabet buttons
-	
 	
 	/**
 	 * Creates a pane of Alphabets that the user can click in order to make a guess in the game of HangMan.
@@ -80,7 +78,7 @@ public class HangMan extends Application {
 		letterGridPane.setStyle("-fx-padding: 5px; -fx-border-color: black; -fx-border-width: 2px 0 0 0");
 		
 		return letterGridPane;
-	}
+	} // End makeAlphabetBar()
 	
 	/**
 	 * 
@@ -102,7 +100,7 @@ public class HangMan extends Application {
 		optionBar.setStyle("-fx-padding: 5px; -fx-border-color: black; -fx-border-width: 2px 0 0 0");
 		
 		return optionBar;
-	}
+	} // End makeOptionBar()
 	
 	/**
 	 * When the program starts this builds the alphabet bar, main drawing canvas, and lower option bar and orients them
@@ -138,16 +136,19 @@ public class HangMan extends Application {
 			e.printStackTrace();
 		}
 		
-		wordSoFar = "";
+		// Initialize variables for first game
+		giveUp = false;
+		newGame = true;
+		userWon = false;
+		guesses = "";
 		
+		wordSoFar = "";
 		for(int i = 0; i < word.length(); i++) {
 			wordSoFar += " _ ";
 		}
 		
-		guesses = "";
-		
 		draw();
-	}
+	} // End start()
 	
 	/**
 	 * Deals with letter presses.
@@ -162,10 +163,9 @@ public class HangMan extends Application {
 				alphabetButtons[i].setDisable(true);
 				hangManLogic(letter);		
 			}
-		}
-		
+		}	
 		draw();
-	}
+	} // End doLetterButton()
 	
 	
 	
@@ -202,19 +202,20 @@ public class HangMan extends Application {
 		
 		// Redraw canvas
 		draw();
-	}
+		
+	} // End doNextWord()
 	
 	private void doGiveUp() {
 		giveUp = true;
 		draw();
-	}
+	} // End doGiveUp()
 	
 	/**
 	 * Exits the program when user presses the quit button.
 	 */
 	private void doQuit() {
 		System.exit(0);
-	}
+	} // End doQuit()
 	
 	// *************** HANGMAN LOGIC *********************** //
 	
@@ -257,18 +258,18 @@ public class HangMan extends Application {
 		System.out.println("The word so far: " + wordSoFar);
 
 		// Tests loop condition, if the user has guessed the word it ends the loop
-		/*
-		wordSoFar = wordSoFar.replaceAll("\\s+", ""); // collapses any white space found in the word
-		if(wordSoFar.equals(word)) {
-			correctGuess = true;
+		String testWordSoFar = wordSoFar;
+		
+		testWordSoFar = testWordSoFar.replaceAll("\\s+", ""); // collapses any white space found in the word
+		if(testWordSoFar.equals(word)) {
+			userWon = true;
+			//wordSoFar = ""; // Clear word
 			System.out.println("You got it!");
 		}
-		*/
 		
-		draw();
-		//wordSoFar = ""; // Clear word
+		draw();	
 			
-	}	 // End HangManLogic()
+	}	// End HangManLogic()
 	
 	
 	// ***************** DRAWING METHODS ************************ //
@@ -278,32 +279,43 @@ public class HangMan extends Application {
 	 * you just have to call draw() to completely redraw the canvas.
 	 */
 	public void draw() {
-		// Testing git branching
-		clear();
+		g.setFont(new Font(50));
 		
+		fillBackground();
+		drawGallow();				
 		// Figure out how to make text larger
-		Text wordSoFar_ = new Text(wordSoFar);
-		wordSoFar_.setStyle("-fx-font: 40 arial;");
-		
+		//Text wordSoFar_ = new Text(wordSoFar);
+		//wordSoFar_.setStyle("-fx-font: 40 arial;");
 		g.setFill(Color.BLACK);
-		g.fillText("Word: " + word, 200, 70);
-	
+		g.fillText("Word: " + word, 45, 70);
 		g.fillText(wordSoFar, 45, 450, 200);
-	
-		
-		
-		//g.fillText(wordSoFar, 45, 450);
 		
 		if(giveUp) {
 			g.setFill(Color.BLACK);
 			g.fillText("Give up button has been pressed", 100, 50);
 		}
-	}
+	} // End draw()
 	
 	// METHODS USED TO CLEAR AND DRAW SHAPES IN THE DRAW METHOD
-	public void clear() {
+	public void fillBackground() {
 		g.setFill(Color.TAN);
 		g.fillRect(0, 0, 800, 600);
+	} // End clear()
+	
+	private void drawGallow() {
+		// Base
+		g.setFill(Color.DARKGREEN);
+		g.fillRect(400, 400, 300, 40);
+		
+		// Stand
+		g.setFill(Color.SADDLEBROWN);
+		g.fillRect(450, 100, 20, 300);
+		
+		// Branch
+		g.fillRect(460, 130, 135, 10);
+		
+		// Noose
+		g.fillRect(580, 140, 3, 35);
 	}
 	
 	/**
@@ -346,5 +358,5 @@ public class HangMan extends Application {
 
 	public static void main(String[] args) {
 		launch();
-	}
+	} // End main()
 }
