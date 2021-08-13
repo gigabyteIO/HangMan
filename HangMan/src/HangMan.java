@@ -32,17 +32,12 @@ public class HangMan extends Application {
 	private static String word; // The word that the player is trying to guess
 	private String wordSoFar;   // The word that shows any correct character guesses, otherwise shows "_ " (underscores)
 	private String guesses;		// String concatenated with each character guess
+	private int wrongGuesses;   // The number of guesses the player has gotten wrong
+	private final int GUESS_LIMIT = 7; // The number of guesses the player gets before losing the game
 	
 	private boolean giveUp;  // Variable that tracks whether player has pressed the "give up" button
 	private boolean newGame; // Keeps track of whether it's a new game
 	private boolean userWon;
-	
-	private final int HEAD = 1,
-					  BODY = 2,
-					  LEFT_ARM = 3,
-					  RIGHT_ARM = 4,
-					  LEFT_LEG = 5,
-					  RIGHT_LEG = 6;
 	
 	private GraphicsContext g; // Used for drawing on canvas
 	private Button[] alphabetButtons = new Button[26]; // Holds all the alphabet buttons
@@ -140,6 +135,7 @@ public class HangMan extends Application {
 		giveUp = false;
 		newGame = true;
 		userWon = false;
+		wrongGuesses = 0;
 		guesses = "";
 		
 		wordSoFar = "";
@@ -176,6 +172,7 @@ public class HangMan extends Application {
 	private void doNextWord() {
 		// Reset variables
 		newGame = true;
+		wrongGuesses = 0;
 		wordSoFar = "";
 		guesses = "";
 		
@@ -231,6 +228,7 @@ public class HangMan extends Application {
 		}
 		else {
 			System.out.println("Sorry, " + letter + " isn't in the word!\n");
+			wrongGuesses++; // User got the guess wrong, add one to variable
 		}
 
 		// Add user guess to guesses
@@ -267,7 +265,7 @@ public class HangMan extends Application {
 			System.out.println("You got it!");
 		}
 		
-		draw();	
+		//draw();	
 			
 	}	// End HangManLogic()
 	
@@ -289,6 +287,34 @@ public class HangMan extends Application {
 		g.setFill(Color.BLACK);
 		g.fillText("Word: " + word, 45, 70);
 		g.fillText(wordSoFar, 45, 450, 200);
+		
+		//if(wrongGuesses < GUESS_LIMIT) {
+			// Draw the hang man based on how many wrong guesses
+			
+			System.out.println("Number of wrong guesses: " + wrongGuesses);
+			for(int i = 0; i < wrongGuesses; i++) {
+				
+				switch(i) {
+				case 0:
+					//g.fillRect(580, 140, 3, 35);
+				case 1:
+					g.setFill(Color.GREEN);
+					g.fillRect(566, 170, 30, 30);
+				
+				case 2: 
+					g.fillRect(579, 200, 5, 50);
+					
+				case 3:
+					
+				case 4:
+					
+				case 5:
+					
+				default:
+					
+				}
+			}
+		//}		
 		
 		if(giveUp) {
 			g.setFill(Color.BLACK);
