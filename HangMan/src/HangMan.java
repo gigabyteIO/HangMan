@@ -41,6 +41,7 @@ public class HangMan extends Application {
 	private boolean playerWon, playerLost;
 
 	private GraphicsContext g; // Used for drawing on canvas
+	private WordList wordList = new WordList("WordList.txt");
 	private Button[] alphabetButtons = new Button[26]; // Holds all the alphabet buttons
 
 	/**
@@ -128,13 +129,7 @@ public class HangMan extends Application {
 		stage.setTitle("Hang Man");
 		stage.show();
 
-		// Picks a word from the word list.
-		try {
-			word = randomWord("WordList.txt");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		word = wordList.removeRandomWord();
 
 		// Initialize variables for first game
 		giveUp = false;
@@ -176,15 +171,11 @@ public class HangMan extends Application {
 	 * This gets the game ready for the next word and resets the alphabet buttons
 	 */
 	private void doNextWord() {
-		// Pick new word
-		try {
-			word = randomWord("WordList.txt");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		word = wordList.removeRandomWord();
 
 		int wordLength = word.length();
+		// Debug statement
+		System.out.println(word);
 
 		// Reset variables
 		newGame = true;
@@ -226,14 +217,20 @@ public class HangMan extends Application {
 		letter = Character.toUpperCase(letter);
 		int wordLength = word.length(); // length of the randomly chosen word
 
-		// Check if guessed character is in any position in the word
-		if (word.indexOf(letter) >= 0) {
-			displayMessage = "Yes, " + letter + " is in the word! Pick your next letter.\n" + "Bad Guesses Remaining: "
-					+ (GUESS_LIMIT - wrongGuesses);
-		} else if (word.indexOf(letter) == -1) {
-			wrongGuesses++; // User got the guess wrong, add one to variable
-			displayMessage = "Sorry, " + letter + " isn't in the word! Pick your next letter.\n"
-					+ "Bad Guesses Remaining: " + (GUESS_LIMIT - wrongGuesses);
+		if (wrongGuesses < GUESS_LIMIT - 1) {
+			// Check if guessed character is in any position in the word
+			if (word.indexOf(letter) >= 0) {
+				displayMessage = "Yes, " + letter + " is in the word! Pick your next letter.\n"
+						+ "Bad Guesses Remaining: " + (GUESS_LIMIT - wrongGuesses);
+			} else if (word.indexOf(letter) == -1) {
+				wrongGuesses++; // User got the guess wrong, add one to variable
+				displayMessage = "Sorry, " + letter + " isn't in the word! Pick your next letter.\n"
+						+ "Bad Guesses Remaining: " + (GUESS_LIMIT - wrongGuesses);
+			}
+		}
+		else {
+			displayMessage = "Sorry, you're hung! The word is: " + word
+					+ "\nClick \"Next word\" to play again.";
 		}
 
 		// Add user guess to guesses
@@ -284,7 +281,7 @@ public class HangMan extends Application {
 			g.setFill(Color.RED);
 			g.setFont(new Font(20));
 			g.fillText(displayMessage, 20, 70);
-			
+
 			g.setFill(Color.BLACK);
 			g.setFont(new Font(60));
 			g.fillText(wordSoFar, 50, 350, 200);
@@ -355,8 +352,8 @@ public class HangMan extends Application {
 					g.fillRect(620, 295, 5, 50);
 
 					// User lost display message
-					displayMessage = "Sorry, you're hung! The word is: " + word
-							+ "\nClick \"Next word\" to play again.";
+					// displayMessage = "Sorry, you're hung! The word is: " + word
+					// + "\nClick \"Next word\" to play again.";
 					resetLeftCanvas();
 
 					g.setFill(Color.RED);
@@ -402,6 +399,7 @@ public class HangMan extends Application {
 	}
 
 	/**
+	/**
 	 * Picks a random word from a list from a text file specified by the user.
 	 * 
 	 * @param wordList this should be the file name that contains list of words(each
@@ -409,6 +407,7 @@ public class HangMan extends Application {
 	 * @return a random word from the list.
 	 * @throws FileNotFoundException
 	 */
+	/**
 	public static String randomWord(String wordList) throws FileNotFoundException {
 		File fileName = new File(wordList);
 		Scanner sc = new Scanner(fileName);
@@ -425,11 +424,12 @@ public class HangMan extends Application {
 
 		sc = new Scanner(new File(wordList));
 		int rand = (int) (numberOfWords * Math.random()); // Computes a random number between 0 and size of list
+		System.out.println("Random Number: " + rand);
 		numberOfWords = 0;
 		while (sc.hasNext()) {
 			numberOfWords++;
 			// Assigns the string word to randomly chosen string
-			if (rand == numberOfWords) {
+			if (numberOfWords == rand) {
 				word = sc.nextLine();
 				break;
 			}
@@ -439,7 +439,8 @@ public class HangMan extends Application {
 
 		return word.toUpperCase();
 	} // End randomWord()
-
+	**/
+	
 	public static void main(String[] args) {
 		launch();
 	} // End main()
