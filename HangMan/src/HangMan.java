@@ -130,6 +130,7 @@ public class HangMan extends Application {
 		stage.show();
 
 		word = wordList.removeRandomWord();
+		word = word.toUpperCase();
 
 		// Initialize variables for first game
 		giveUp = false;
@@ -172,6 +173,7 @@ public class HangMan extends Application {
 	 */
 	private void doNextWord() {
 		word = wordList.removeRandomWord();
+		word = word.toUpperCase();
 
 		int wordLength = word.length();
 		// Debug statement
@@ -253,6 +255,8 @@ public class HangMan extends Application {
 				}
 			}
 		}
+		// Debug statement
+		//System.out.println(wordSoFar);
 		// Tests loop condition, if the user has guessed the word it ends the loop
 		String testWordSoFar = wordSoFar;
 
