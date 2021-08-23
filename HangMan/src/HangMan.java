@@ -30,7 +30,11 @@ public class HangMan extends Application {
 
 	private static String word; // The word that the player is trying to guess
 	private String wordSoFar; // The word that shows any correct character guesses, otherwise shows "_ "
+	private String underScores; // The underscores that go under the word.
 								// (underscores)
+	private CharacterXY[] characterCoords; // Holds the x, y coordinates for each character in the word so graphics
+											// context knows where to print them.
+
 	private String guesses; // String concatenated with each character guess
 	private int wrongGuesses; // The number of guesses the player has gotten wrong
 	private final int GUESS_LIMIT = 7; // The number of guesses the player gets before losing the game
@@ -143,8 +147,20 @@ public class HangMan extends Application {
 
 		wordSoFar = "";
 		for (int i = 0; i < word.length(); i++) {
-			wordSoFar += " _ ";
+			wordSoFar += "  ";
 		}
+
+		characterCoords = stringToCharacterXY(word);
+
+		// test statement
+		for (int i = 0; i < word.length(); i++) {
+			System.out.println("Character: " + characterCoords[i].getWord() + " X: " + characterCoords[i].getX()
+					+ " Y: " + characterCoords[i].getY());
+		}
+
+		// for(int i = 0; i < word.length(); i++) {
+		// underScores = " _ ";
+		// }
 
 		draw();
 	} // End start()
@@ -177,7 +193,7 @@ public class HangMan extends Application {
 
 		int wordLength = word.length();
 		// Debug statement
-		System.out.println(word);
+		System.out.println("Next word: " + word);
 
 		// Reset variables
 		newGame = true;
@@ -185,6 +201,7 @@ public class HangMan extends Application {
 		// playerLost = false;
 		wrongGuesses = 0;
 		wordSoFar = "";
+		underScores = "";
 		guesses = "";
 		displayMessage = "The word has " + wordLength + " letters. Let's play Hangman!\n" + "Bad Guesses Remaining: "
 				+ (GUESS_LIMIT - wrongGuesses);
@@ -198,8 +215,20 @@ public class HangMan extends Application {
 
 		// Resets the players guessed word
 		for (int i = 0; i < word.length(); i++) {
-			wordSoFar += " _ ";
+			wordSoFar += "  ";
 		}
+
+		characterCoords = stringToCharacterXY(word);
+
+		// test statement
+		for (int i = 0; i < word.length(); i++) {
+			System.out.println("Character: " + characterCoords[i].getWord() + " X: " + characterCoords[i].getX()
+					+ " Y: " + characterCoords[i].getY());
+		}
+
+		// for (int i = 0; i < word.length(); i++) {
+		// underScores = " _ ";
+		// }
 
 		// Redraw canvas
 		draw();
@@ -226,13 +255,15 @@ public class HangMan extends Application {
 						+ "Bad Guesses Remaining: " + (GUESS_LIMIT - wrongGuesses);
 			} else if (word.indexOf(letter) == -1) {
 				wrongGuesses++; // User got the guess wrong, add one to variable
+
 				displayMessage = "Sorry, " + letter + " isn't in the word! Pick your next letter.\n"
 						+ "Bad Guesses Remaining: " + (GUESS_LIMIT - wrongGuesses);
+
 			}
-		}
-		else {
-			displayMessage = "Sorry, you're hung! The word is: " + word
-					+ "\nClick \"Next word\" to play again.";
+		} else {
+			wrongGuesses++;
+			displayMessage = "Sorry, you're hung! The word is: " + word + "\nClick \"Next word\" to play again.";
+			return;
 		}
 
 		// Add user guess to guesses
@@ -241,7 +272,8 @@ public class HangMan extends Application {
 		for (int i = 0; i < wordLength; i++) {
 			for (int j = 0; j < guesses.length(); j++) {
 				if (word.charAt(i) == guesses.charAt(j)) {
-					wordSoFar = wordSoFar + " " + guesses.charAt(j) + " ";
+					wordSoFar = wordSoFar + "  " + guesses.charAt(j) + "  ";
+					characterCoords[i].setIsGuessed();
 					break;
 				}
 				// This took forever to figure out
@@ -250,13 +282,13 @@ public class HangMan extends Application {
 				// has tested all the guesses
 				else {
 					if (j == guesses.length() - 1) {
-						wordSoFar = wordSoFar + " _ ";
+						wordSoFar = wordSoFar + "  ";
 					}
 				}
 			}
 		}
 		// Debug statement
-		//System.out.println(wordSoFar);
+		// System.out.println(wordSoFar);
 		// Tests loop condition, if the user has guessed the word it ends the loop
 		String testWordSoFar = wordSoFar;
 
@@ -282,16 +314,50 @@ public class HangMan extends Application {
 
 		if (newGame) {
 			resetBackground();
+
 			g.setFill(Color.RED);
 			g.setFont(new Font(20));
 			g.fillText(displayMessage, 20, 70);
 
+			// resetLeftCanvas();
+
+			// This draws the underscores showing how many characters are in the word at the
+			// bottom of the canvas.
+			int x1 = 5;
+			int x2 = 55;
+			for (int i = 0; i < word.length(); i++) {
+				g.setStroke(Color.BLACK);
+				g.setLineWidth(3);
+				g.strokeLine(x1, 475, x2, 475);
+				// Move line right a fixed amount
+				x1 = x1 + 65;
+				x2 = x2 + 65;
+			}
+
+			// System.out.println("Check 1 - 2");
 			g.setFill(Color.BLACK);
 			g.setFont(new Font(60));
-			g.fillText(wordSoFar, 50, 350, 200);
+			
+			printCharacters(g, characterCoords);
+
+			// g.fillText(wordSoFar, 50, 460, 400);
+
+			newGame = false;
 		} else {
 			// This is for redrawing the display messages so they don't overlap
 			resetLeftCanvas();
+			resetLowerCanvas();
+
+			int x1 = 5;
+			int x2 = 55;
+			for (int i = 0; i < word.length(); i++) {
+				g.setStroke(Color.BLACK);
+				g.setLineWidth(3);
+				g.strokeLine(x1, 475, x2, 475);
+				// Move line right a fixed amount
+				x1 = x1 + 65;
+				x2 = x2 + 65;
+			}
 
 			g.setFill(Color.RED);
 			g.setFont(new Font(20));
@@ -302,7 +368,9 @@ public class HangMan extends Application {
 			// wordSoFar_.setStyle("-fx-font: 40 arial;");
 			g.setFill(Color.BLACK);
 			g.setFont(new Font(60));
-			g.fillText(wordSoFar, 50, 350, 200);
+			printCharacters(g, characterCoords);
+			//g.fillText(wordSoFar, 3, 460, 600);
+			// g.fillText(underScores, 50, 350, 400);
 
 			// if(wrongGuesses < GUESS_LIMIT) {
 			// Draw the hang man based on how many wrong guesses
@@ -313,60 +381,59 @@ public class HangMan extends Application {
 				// HEAD
 				if (wrongGuesses == 1) {
 					g.setFill(Color.CORNFLOWERBLUE);
-					g.fillOval(592, 175, 30, 50);
+					g.fillOval(592, 100, 30, 50);
 				}
 
 				// NECK
 				else if (wrongGuesses == 2) {
 					g.setFill(Color.CORNFLOWERBLUE);
-					g.fillRect(604, 225, 5, 35);
+					g.fillRect(604, 150, 5, 35);
 					// g.fillRect(579, 200, 5, 70);
 				}
 
 				// LEFT ARM
 				else if (wrongGuesses == 3) {
 					g.setFill(Color.CORNFLOWERBLUE);
-					g.fillRect(575, 255, 30, 5);
+					g.fillRect(575, 180, 30, 5);
 				}
 
 				// RIGHT ARM
 				else if (wrongGuesses == 4) {
 					g.setFill(Color.CORNFLOWERBLUE);
-					g.fillRect(605, 255, 30, 5);
+					g.fillRect(605, 180, 30, 5);
 				}
 
 				// BODY
 				else if (wrongGuesses == 5) {
 					g.setFill(Color.CORNFLOWERBLUE);
-					g.fillRect(604, 260, 5, 35);
+					g.fillRect(604, 185, 5, 35);
 				}
 
 				// LEFT LEG
 				else if (wrongGuesses == 6) {
 					g.setFill(Color.CORNFLOWERBLUE);
-					g.fillRect(590, 295, 17, 5);
-					g.fillRect(590, 295, 5, 50);
+					g.fillRect(590, 220, 17, 5);
+					g.fillRect(590, 220, 5, 50);
 
 				}
 
 				// RIGHT LEG
-				else if (wrongGuesses == 7) {
+				else {
 					g.setFill(Color.CORNFLOWERBLUE);
-					g.fillRect(607, 295, 15, 5);
-					g.fillRect(620, 295, 5, 50);
+					g.fillRect(607, 220, 15, 5);
+					g.fillRect(620, 220, 5, 50);
 
 					// User lost display message
 					// displayMessage = "Sorry, you're hung! The word is: " + word
 					// + "\nClick \"Next word\" to play again.";
 					resetLeftCanvas();
+					//resetLowerCanvas();
 
 					g.setFill(Color.RED);
 					g.setFont(new Font(20));
 					g.fillText(displayMessage, 20, 70);
 
-					g.setFill(Color.BLACK);
-					g.setFont(new Font(60));
-					g.fillText(wordSoFar, 50, 350, 200);
+					
 
 				}
 			}
@@ -381,30 +448,90 @@ public class HangMan extends Application {
 		newGame = false;
 	} // End clear()
 
+	/**
+	 * 
+	 */
 	private void resetLeftCanvas() {
 		g.setFill(Color.TAN);
-		g.fillRect(0, 0, 450, 600);
-	}
+		g.fillRect(0, 0, 450, 400);
+	} // End resetLeftCanvas()
 
+	/**
+	 * 
+	 */
+	private void resetLowerCanvas() {
+		g.setFill(Color.TAN);
+		g.fillRect(0, 525, 800, 75);
+	} // End resetLowerCanvas()
+
+	/**
+	 * 
+	 */
 	private void drawGallow() {
 		// Base
 		g.setFill(Color.DARKGREEN);
-		g.fillRect(425, 400, 300, 40);
+		g.fillRect(450, 325, 300, 40);
 
 		// Stand
 		g.setFill(Color.SADDLEBROWN);
-		g.fillRect(475, 100, 20, 300);
+		g.fillRect(475, 25, 20, 300);
 
 		// Branch
-		g.fillRect(485, 130, 135, 10);
+		g.fillRect(485, 55, 135, 10);
 
 		// Noose
-		g.fillRect(605, 140, 3, 35);
-	}
+		g.fillRect(605, 65, 3, 35);
+	} // End drawGallow()
 
 	/**
+	 * NEED TO FINISH THIS and TEST Converts characters in a string to X, Y
+	 * coordinates stored in an array.
+	 * 
+	 * @param word The word being converted.
+	 * @return The array of characters with their associated (X, Y) Coordinates.
+	 */
+	private CharacterXY[] stringToCharacterXY(String word) {
+		CharacterXY[] characterCoordinates;
+		characterCoordinates = new CharacterXY[word.length()];
+
+		int x = 5;
+		int y = 460;
+		for (int i = 0; i < word.length(); i++) {
+			char cha = word.charAt(i);
+			String str = Character.toString(cha);
+			characterCoordinates[i] = new CharacterXY(str, x, y);
+			x = x + 66;
+		}
+
+		return characterCoordinates;
+	} // End stringToCharacterXY()
+	
+	
 	/**
-	 * Picks a random word from a list from a text file specified by the user.
+	 * Prints out the characters of the word on the canvas.
+	 * @param g The graphics context used for drawing.
+	 * @param word The array that holds the characters of the word. 
+	 */
+	private void printCharacters(GraphicsContext g, CharacterXY[] word) {
+		String chr;
+		int x;
+		int y;
+		boolean isGuessed;
+		
+		for(int i = 0; i < word.length; i++) {
+			chr = word[i].getWord();
+			x = word[i].getX();
+			y = word[i].getY();
+			isGuessed = word[i].getIsGuessed();
+			
+			if(isGuessed)
+				g.fillText(chr, x, y);
+		}
+		
+	} // End printCharacters()
+
+	/**
+	 * /** Picks a random word from a list from a text file specified by the user.
 	 * 
 	 * @param wordList this should be the file name that contains list of words(each
 	 *                 word should be on a new line).
@@ -412,39 +539,24 @@ public class HangMan extends Application {
 	 * @throws FileNotFoundException
 	 */
 	/**
-	public static String randomWord(String wordList) throws FileNotFoundException {
-		File fileName = new File(wordList);
-		Scanner sc = new Scanner(fileName);
+	 * public static String randomWord(String wordList) throws FileNotFoundException
+	 * { File fileName = new File(wordList); Scanner sc = new Scanner(fileName);
+	 * 
+	 * String word = null; int numberOfWords;
+	 * 
+	 * numberOfWords = 0; // Checks how many words are in the list while
+	 * (sc.hasNext()) { numberOfWords++; sc.next(); }
+	 * 
+	 * sc = new Scanner(new File(wordList)); int rand = (int) (numberOfWords *
+	 * Math.random()); // Computes a random number between 0 and size of list
+	 * System.out.println("Random Number: " + rand); numberOfWords = 0; while
+	 * (sc.hasNext()) { numberOfWords++; // Assigns the string word to randomly
+	 * chosen string if (numberOfWords == rand) { word = sc.nextLine(); break; }
+	 * sc.nextLine(); // process next data } sc.close(); // close file
+	 * 
+	 * return word.toUpperCase(); } // End randomWord()
+	 **/
 
-		String word = null;
-		int numberOfWords;
-
-		numberOfWords = 0;
-		// Checks how many words are in the list
-		while (sc.hasNext()) {
-			numberOfWords++;
-			sc.next();
-		}
-
-		sc = new Scanner(new File(wordList));
-		int rand = (int) (numberOfWords * Math.random()); // Computes a random number between 0 and size of list
-		System.out.println("Random Number: " + rand);
-		numberOfWords = 0;
-		while (sc.hasNext()) {
-			numberOfWords++;
-			// Assigns the string word to randomly chosen string
-			if (numberOfWords == rand) {
-				word = sc.nextLine();
-				break;
-			}
-			sc.nextLine(); // process next data
-		}
-		sc.close(); // close file
-
-		return word.toUpperCase();
-	} // End randomWord()
-	**/
-	
 	public static void main(String[] args) {
 		launch();
 	} // End main()
