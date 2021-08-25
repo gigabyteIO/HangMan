@@ -18,7 +18,6 @@ public class MidiHangMan {
 	private SimpleSynth synth = new SimpleSynth();
 	private Tune tune;
 	private Random ran = new Random();
-	// hungNotes = (120, 121, 122, 123, 124);
 
 	/**
 	 * MidiTune constructor.
@@ -26,20 +25,6 @@ public class MidiHangMan {
 	public MidiHangMan() {
 		synth.setInstrument(0); // grand piano
 	}
-
-	/**
-	 * Plays a bird chirp when player makes a correct guess.
-	 */
-	public void correctGuessTune() {
-		tune = new Tune();
-		// Bird chirp
-		synth.setInstrument(123);
-		
-		int noteNumber = ran.nextInt(127);
-		tune.add(new Note(noteNumber, 1000));
-		
-		tune.play(synth);
-	} // End correctGuessTune()
 	
 	/**
 	 * Plays one organ note when player makes a wrong guess.
@@ -50,7 +35,11 @@ public class MidiHangMan {
 		// Organ
 		synth.setInstrument(19);
 		
-		int noteNumber = ran.nextInt(127);
+		int low = 40;
+		int high = 60;
+		
+		int noteNumber = ran.nextInt(high - low) + low;
+		//System.out.println("Note #: " + noteNumber);
 		tune.add(new Note(noteNumber, 1000));
 		
 		tune.play(synth);
@@ -65,15 +54,37 @@ public class MidiHangMan {
 		// Organ
 		synth.setInstrument(19);
 		
-		int noteNumber = ran.nextInt(127);
-		tune.add(new Note(noteNumber, 1000));
-		noteNumber = ran.nextInt(127);
-		tune.add(new Note(noteNumber, 1000));
-		noteNumber = ran.nextInt(127);
-		tune.add(new Note(noteNumber, 1000));
+		int low = 40;
+		int high = 60;
+		
+		int noteNumber = ran.nextInt(high - low) + low;
+		//System.out.println("Note #: " + noteNumber);
+		tune.add(new Note(noteNumber, 500));
+		noteNumber = ran.nextInt(high - low) + low;
+		tune.add(new Note(noteNumber, 500));
+		noteNumber = ran.nextInt(high - low) + low;
+		tune.add(new Note(noteNumber, 2000));
 		
 		tune.play(synth);	
 	} // End hungTune()
+	
+	/**
+	 * Plays a bird chirp when player makes a correct guess.
+	 */
+	public void correctGuessTune() {
+		tune = new Tune();
+		// Ohs
+		synth.setInstrument(53);
+		
+		int low = 80;
+		int high = 100;
+		
+		int noteNumber = ran.nextInt(high - low) + low;
+		//System.out.println("Note #: " + noteNumber);
+		tune.add(new Note(noteNumber, 1000));
+		
+		tune.play(synth);
+	} // End correctGuessTune()
 	
 	/**
 	 * Plays applause when player guesses the word correctly.
@@ -81,15 +92,18 @@ public class MidiHangMan {
 	public void wonTune() {
 		tune = new Tune();
 		
-		// Applause
-		synth.setInstrument(126);
+		// Ohs
+		synth.setInstrument(53);
+		int low = 80;
+		int high = 100;
 		
-		int noteNumber = ran.nextInt(127);
+		int noteNumber = ran.nextInt(high - low) + low;
+		//System.out.println("Note #: " + noteNumber);
 		tune.add(new Note(noteNumber, 1000));
-		noteNumber = ran.nextInt(127);
+		noteNumber = ran.nextInt(high - low) + low;
 		tune.add(new Note(noteNumber, 1000));
-		noteNumber = ran.nextInt(127);
-		tune.add(new Note(noteNumber, 1000));
+		noteNumber = ran.nextInt(high - low) + low;
+		tune.add(new Note(noteNumber, 2000));
 		
 		tune.play(synth);
 	} // End wonTune()

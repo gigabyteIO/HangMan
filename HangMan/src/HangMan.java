@@ -136,7 +136,7 @@ public class HangMan extends Application {
 		word = word.toUpperCase();
 
 		// Initialize variables for first game
-		newGame = true;
+		newGame = true;	
 		wrongGuesses = 0;
 		guesses = "";
 		displayMessage = "The word has " + word.length() + " letters. Let's play Hangman!\n" + "Bad Guesses Remaining: "
