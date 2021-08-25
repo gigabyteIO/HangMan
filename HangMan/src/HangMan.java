@@ -30,8 +30,7 @@ public class HangMan extends Application {
 
 	private static String word; // The word that the player is trying to guess
 	private String wordSoFar; // The word that shows any correct character guesses, otherwise shows "_ "
-	private String underScores; // The underscores that go under the word.
-								// (underscores)
+
 	private CharacterXY[] characterCoords; // Holds the x, y coordinates for each character in the word so graphics
 											// context knows where to print them.
 
@@ -40,9 +39,8 @@ public class HangMan extends Application {
 	private final int GUESS_LIMIT = 7; // The number of guesses the player gets before losing the game
 	private String displayMessage;
 
-	private boolean giveUp; // Variable that tracks whether player has pressed the "give up" button
 	private boolean newGame; // Keeps track of whether it's a new game
-	private boolean playerWon, playerLost;
+
 
 	private GraphicsContext g; // Used for drawing on canvas
 	private WordList wordList = new WordList("WordList.txt");
@@ -138,9 +136,7 @@ public class HangMan extends Application {
 		word = word.toUpperCase();
 
 		// Initialize variables for first game
-		giveUp = false;
 		newGame = true;
-		playerWon = false;
 		wrongGuesses = 0;
 		guesses = "";
 		displayMessage = "The word has " + word.length() + " letters. Let's play Hangman!\n" + "Bad Guesses Remaining: "
@@ -158,10 +154,6 @@ public class HangMan extends Application {
 			System.out.println("Character: " + characterCoords[i].getWord() + " X: " + characterCoords[i].getX()
 					+ " Y: " + characterCoords[i].getY());
 		}
-
-		// for(int i = 0; i < word.length(); i++) {
-		// underScores = " _ ";
-		// }
 
 		draw();
 	} // End start()
@@ -198,11 +190,8 @@ public class HangMan extends Application {
 
 		// Reset variables
 		newGame = true;
-		// playerWon = false;
-		// playerLost = false;
 		wrongGuesses = 0;
 		wordSoFar = "";
-		underScores = "";
 		guesses = "";
 		displayMessage = "The word has " + wordLength + " letters. Let's play Hangman!\n" + "Bad Guesses Remaining: "
 				+ (GUESS_LIMIT - wrongGuesses);
@@ -226,10 +215,6 @@ public class HangMan extends Application {
 			System.out.println("Character: " + characterCoords[i].getWord() + " X: " + characterCoords[i].getX()
 					+ " Y: " + characterCoords[i].getY());
 		}
-
-		// for (int i = 0; i < word.length(); i++) {
-		// underScores = " _ ";
-		// }
 
 		// Redraw canvas
 		draw();
@@ -270,9 +255,6 @@ public class HangMan extends Application {
 				}
 			}
 		}
-		// Debug statement
-		// System.out.println(wordSoFar);
-		// Tests loop condition, if the user has guessed the word it ends the loop
 		
 		if (wrongGuesses < GUESS_LIMIT) {
 			// Check if guessed character is in any position in the word
@@ -280,11 +262,12 @@ public class HangMan extends Application {
 				String testWordSoFar = wordSoFar;
 				testWordSoFar = testWordSoFar.replaceAll("\\s+", ""); // collapses any white space found in the word
 				
+				// Player won
 				if (testWordSoFar.equals(word)) {
-					playerWon = true;
 					displayMessage = "The word is complete. You win!\nClick \"Next word\" to play again";
 					midi.wonTune();
 				}
+				// Player hasn't won, but correctly guessed a letter
 				else {
 					displayMessage = "Yes, " + letter + " is in the word! Pick your next letter.\n"
 							+ "Bad Guesses Remaining: " + (GUESS_LIMIT - wrongGuesses);
@@ -292,14 +275,16 @@ public class HangMan extends Application {
 				}
 			} else {
 				wrongGuesses++; // User got the guess wrong, add one to variable
-
+				
+				// Player still has more guesses
 				if (wrongGuesses != GUESS_LIMIT) {
 					displayMessage = "Sorry, " + letter + " isn't in the word! Pick your next letter.\n"
 							+ "Bad Guesses Remaining: " + (GUESS_LIMIT - wrongGuesses);
 					midi.incorrectGuessTune();
 				}
 				// Deals with edge case
-				if (wrongGuesses == GUESS_LIMIT) {
+				// Player is out of guesses, player lost
+				else { //(wrongGuesses == GUESS_LIMIT) {
 					displayMessage = "Sorry, you're hung! The word is: " + word
 							+ "\nClick \"Next word\" to play again.";
 					midi.hungTune();
@@ -372,16 +357,11 @@ public class HangMan extends Application {
 			g.setFont(new Font(20));
 			g.fillText(displayMessage, 20, 70);
 
-			// Figure out how to make text larger
-			// Text wordSoFar_ = new Text(wordSoFar);
-			// wordSoFar_.setStyle("-fx-font: 40 arial;");
+
 			g.setFill(Color.BLACK);
 			g.setFont(new Font(60));
 			printCharacters(g, characterCoords);
-			// g.fillText(wordSoFar, 3, 460, 600);
-			// g.fillText(underScores, 50, 350, 400);
-
-			// if(wrongGuesses < GUESS_LIMIT) {
+	
 			// Draw the hang man based on how many wrong guesses
 
 			System.out.println("Number of wrong guesses: " + wrongGuesses);
@@ -536,33 +516,6 @@ public class HangMan extends Application {
 		}
 
 	} // End printCharacters()
-
-	/**
-	 * /** Picks a random word from a list from a text file specified by the user.
-	 * 
-	 * @param wordList this should be the file name that contains list of words(each
-	 *                 word should be on a new line).
-	 * @return a random word from the list.
-	 * @throws FileNotFoundException
-	 */
-	/**
-	 * public static String randomWord(String wordList) throws FileNotFoundException
-	 * { File fileName = new File(wordList); Scanner sc = new Scanner(fileName);
-	 * 
-	 * String word = null; int numberOfWords;
-	 * 
-	 * numberOfWords = 0; // Checks how many words are in the list while
-	 * (sc.hasNext()) { numberOfWords++; sc.next(); }
-	 * 
-	 * sc = new Scanner(new File(wordList)); int rand = (int) (numberOfWords *
-	 * Math.random()); // Computes a random number between 0 and size of list
-	 * System.out.println("Random Number: " + rand); numberOfWords = 0; while
-	 * (sc.hasNext()) { numberOfWords++; // Assigns the string word to randomly
-	 * chosen string if (numberOfWords == rand) { word = sc.nextLine(); break; }
-	 * sc.nextLine(); // process next data } sc.close(); // close file
-	 * 
-	 * return word.toUpperCase(); } // End randomWord()
-	 **/
 
 	public static void main(String[] args) {
 		launch();
