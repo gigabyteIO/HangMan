@@ -73,8 +73,8 @@ public class MidiHangMan {
 	 */
 	public void correctGuessTune() {
 		tune = new Tune();
-		// Ohs
-		synth.setInstrument(53);
+		// Slap base
+		synth.setInstrument(118);
 		
 		int low = 80;
 		int high = 100;
@@ -90,10 +90,10 @@ public class MidiHangMan {
 	 * Plays applause when player guesses the word correctly.
 	 */
 	public void wonTune() {
-		tune = new Tune();
+		tune = new Tune();	
+		// Slap base
+		synth.setInstrument(118);
 		
-		// Ohs
-		synth.setInstrument(53);
 		int low = 80;
 		int high = 100;
 		

@@ -123,7 +123,7 @@ public class HangMan extends Application {
 		// Orients top buttons, center canvas, and lower option bar
 		mainPane.setTop(makeAlphabetBar());
 		mainPane.setCenter(canvasCenter);
-		mainPane.setBottom(makeOptionBar());
+		mainPane.setBottom(makeOptionBar());							
 
 		// Adds the Pane to a scene, then the scene to the stage
 		Scene scene = new Scene(mainPane);
